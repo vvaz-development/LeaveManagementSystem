@@ -1,4 +1,5 @@
-﻿using LeaveManagementSystem.Web.Data;
+﻿using AutoMapper;
+using LeaveManagementSystem.Web.Data;
 using LeaveManagementSystem.Web.Models.LeaveTypes;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,11 +12,13 @@ namespace LeaveManagementSystem.Web.Controllers
         // 1.Dependency Injection
         // _context is a private field that holds the database context for a local connection
         private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
 
         // 2.Dependency Injection
-        public LeaveTypesController(ApplicationDbContext context)
+        public LeaveTypesController(ApplicationDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         // GET: LeaveTypes
@@ -27,12 +30,15 @@ namespace LeaveManagementSystem.Web.Controllers
             var data = await _context.LeaveTypes.ToListAsync();
 
             // Convert the data model into a view model
-            var viewData = data.Select(q => new IndexVM
-            {
-                Id = q.Id,
-                Name = q.Name,
-                Days = q.NumberOfDays
-            }).ToList();
+
+            //var viewData = data.Select(q => new IndexVM
+            //{
+            //    Id = q.Id,
+            //    Name = q.Name,
+            //    NumberOfDays = q.NumberOfDays
+            //}).ToList();
+
+            var viewData = _mapper.Map<List<IndexVM>>(data);
 
             // return the view model to the view
             return View(viewData);
